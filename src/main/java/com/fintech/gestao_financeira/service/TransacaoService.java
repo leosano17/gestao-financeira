@@ -1,7 +1,9 @@
 package com.fintech.gestao_financeira.service;
 
 import com.fintech.gestao_financeira.model.Transacao;
+import com.fintech.gestao_financeira.model.Usuario;
 import com.fintech.gestao_financeira.repository.TransacaoRepository;
+import com.fintech.gestao_financeira.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +15,18 @@ import java.util.List;
 public class TransacaoService {
 
     private final TransacaoRepository transacaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public List<Transacao> listarTodas() {
-        return transacaoRepository.findAll();
+    public List<Transacao> listarPorUsuario(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return transacaoRepository.findByUsuario(usuario);
     }
 
-    public Transacao salvar(Transacao transacao) {
+    public Transacao salvar(Transacao transacao, String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        transacao.setUsuario(usuario);
         return transacaoRepository.save(transacao);
     }
 
@@ -26,8 +34,8 @@ public class TransacaoService {
         transacaoRepository.deleteById(id);
     }
 
-    public BigDecimal calcularSaldo() {
-        List<Transacao> transacoes = transacaoRepository.findAll();
+    public BigDecimal calcularSaldo(String email) {
+        List<Transacao> transacoes = listarPorUsuario(email);
         BigDecimal saldo = BigDecimal.ZERO;
 
         for (Transacao t : transacoes) {

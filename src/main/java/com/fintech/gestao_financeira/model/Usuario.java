@@ -1,5 +1,6 @@
 package com.fintech.gestao_financeira.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,5 +26,7 @@ public class Usuario {
 
     @Column(nullable = false)
     @NotBlank(message = "Senha é obrigatória")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
+    ;
 }
