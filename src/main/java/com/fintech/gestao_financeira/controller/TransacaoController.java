@@ -2,6 +2,7 @@ package com.fintech.gestao_financeira.controller;
 
 import com.fintech.gestao_financeira.model.Transacao;
 import com.fintech.gestao_financeira.service.TransacaoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class TransacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<Transacao> salvar(@RequestBody Transacao transacao) {
+    public ResponseEntity<Transacao> salvar(@Valid @RequestBody Transacao transacao) {
         return ResponseEntity.ok(transacaoService.salvar(transacao));
     }
     @DeleteMapping("/{id}")
