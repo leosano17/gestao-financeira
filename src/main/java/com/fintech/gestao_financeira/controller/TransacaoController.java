@@ -30,8 +30,8 @@ public class TransacaoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        transacaoService.deletar(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id, Authentication auth) {
+        transacaoService.deletar(id, auth.getName());
         return ResponseEntity.noContent().build();
     }
 

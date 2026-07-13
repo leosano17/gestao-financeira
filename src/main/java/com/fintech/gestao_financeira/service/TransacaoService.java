@@ -30,9 +30,18 @@ public class TransacaoService {
         return transacaoRepository.save(transacao);
     }
 
-    public void deletar(Long id) {
+    public void deletar(Long id, String email) {
+        Transacao transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
+
+        if (transacao.getUsuario() == null ||
+                !transacao.getUsuario().getEmail().equals(email)) {
+            throw new RuntimeException("Você não tem permissão para deletar essa transação");
+        }
+
         transacaoRepository.deleteById(id);
     }
+
 
     public BigDecimal calcularSaldo(String email) {
         List<Transacao> transacoes = listarPorUsuario(email);
