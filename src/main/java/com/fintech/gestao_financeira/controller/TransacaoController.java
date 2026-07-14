@@ -4,12 +4,15 @@ import com.fintech.gestao_financeira.model.Transacao;
 import com.fintech.gestao_financeira.service.TransacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/transacoes")
@@ -19,8 +22,13 @@ public class TransacaoController {
     private final TransacaoService transacaoService;
 
     @GetMapping
-    public List<Transacao> listarTodas(Authentication auth) {
-        return transacaoService.listarPorUsuario(auth.getName());
+    public Page<Transacao> listarTodas(
+            Authentication auth,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanho) {
+
+        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by("data").descending());
+        return transacaoService.listarPorUsuario(auth.getName(), pageable);
     }
 
     @PostMapping

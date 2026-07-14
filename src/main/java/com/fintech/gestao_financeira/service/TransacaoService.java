@@ -7,6 +7,8 @@ import com.fintech.gestao_financeira.model.Usuario;
 import com.fintech.gestao_financeira.repository.TransacaoRepository;
 import com.fintech.gestao_financeira.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,10 +21,10 @@ public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public List<Transacao> listarPorUsuario(String email) {
+    public Page<Transacao> listarPorUsuario(String email, Pageable pageable) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-        return transacaoRepository.findByUsuario(usuario);
+        return transacaoRepository.findByUsuario(usuario, pageable);
     }
 
     public Transacao salvar(Transacao transacao, String email) {
@@ -45,7 +47,9 @@ public class TransacaoService {
     }
 
     public BigDecimal calcularSaldo(String email) {
-        List<Transacao> transacoes = listarPorUsuario(email);
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        List<Transacao> transacoes = transacaoRepository.findByUsuario(usuario, Pageable.unpaged()).getContent();
         BigDecimal saldo = BigDecimal.ZERO;
 
         for (Transacao t : transacoes) {
