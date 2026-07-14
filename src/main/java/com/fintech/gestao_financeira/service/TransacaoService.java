@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.fintech.gestao_financeira.model.TipoTransacao;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -60,5 +64,12 @@ public class TransacaoService {
             }
         }
         return saldo;
+
+    }
+    public Page<Transacao> filtrar(String email, LocalDate dataInicio, LocalDate dataFim,
+                                   TipoTransacao tipo, Long categoriaId, Pageable pageable) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+        return transacaoRepository.filtrar(usuario, dataInicio, dataFim, tipo, categoriaId, pageable);
     }
 }
