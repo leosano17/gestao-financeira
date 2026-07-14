@@ -1,5 +1,7 @@
 package com.fintech.gestao_financeira.service;
 
+import com.fintech.gestao_financeira.exception.ResourceNotFoundException;
+import com.fintech.gestao_financeira.exception.UnauthorizedException;
 import com.fintech.gestao_financeira.model.Transacao;
 import com.fintech.gestao_financeira.model.Usuario;
 import com.fintech.gestao_financeira.repository.TransacaoRepository;
@@ -19,29 +21,28 @@ public class TransacaoService {
 
     public List<Transacao> listarPorUsuario(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         return transacaoRepository.findByUsuario(usuario);
     }
 
     public Transacao salvar(Transacao transacao, String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         transacao.setUsuario(usuario);
         return transacaoRepository.save(transacao);
     }
 
     public void deletar(Long id, String email) {
         Transacao transacao = transacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Transação não encontrada"));
 
         if (transacao.getUsuario() == null ||
                 !transacao.getUsuario().getEmail().equals(email)) {
-            throw new RuntimeException("Você não tem permissão para deletar essa transação");
+            throw new UnauthorizedException("Você não tem permissão para deletar essa transação");
         }
 
         transacaoRepository.deleteById(id);
     }
-
 
     public BigDecimal calcularSaldo(String email) {
         List<Transacao> transacoes = listarPorUsuario(email);
