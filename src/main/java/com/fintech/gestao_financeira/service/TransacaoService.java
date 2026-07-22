@@ -2,6 +2,7 @@ package com.fintech.gestao_financeira.service;
 
 import com.fintech.gestao_financeira.exception.ResourceNotFoundException;
 import com.fintech.gestao_financeira.exception.UnauthorizedException;
+import com.fintech.gestao_financeira.model.TipoTransacao;
 import com.fintech.gestao_financeira.model.Transacao;
 import com.fintech.gestao_financeira.model.Usuario;
 import com.fintech.gestao_financeira.repository.TransacaoRepository;
@@ -10,12 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.fintech.gestao_financeira.model.TipoTransacao;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.time.LocalDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -64,12 +62,18 @@ public class TransacaoService {
             }
         }
         return saldo;
-
     }
+
     public Page<Transacao> filtrar(String email, LocalDate dataInicio, LocalDate dataFim,
                                    TipoTransacao tipo, Long categoriaId, Pageable pageable) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-        return transacaoRepository.filtrar(usuario, dataInicio, dataFim, tipo, categoriaId, pageable);
+
+        if (tipo != null) {
+            return transacaoRepository.findByUsuarioAndDataBetweenAndTipo(
+                    usuario, dataInicio, dataFim, tipo, pageable);
+        }
+
+        return transacaoRepository.filtrarPorPeriodo(usuario, dataInicio, dataFim, categoriaId, pageable);
     }
 }

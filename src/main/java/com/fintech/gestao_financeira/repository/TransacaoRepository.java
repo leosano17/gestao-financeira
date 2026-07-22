@@ -17,16 +17,17 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
     Page<Transacao> findByUsuario(Usuario usuario, Pageable pageable);
 
+    Page<Transacao> findByUsuarioAndDataBetween(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, Pageable pageable);
+
+    Page<Transacao> findByUsuarioAndDataBetweenAndTipo(Usuario usuario, LocalDate dataInicio, LocalDate dataFim, TipoTransacao tipo, Pageable pageable);
+
     @Query("SELECT t FROM Transacao t WHERE t.usuario = :usuario " +
-            "AND (:dataInicio IS NULL OR t.data >= :dataInicio) " +
-            "AND (:dataFim IS NULL OR t.data <= :dataFim) " +
-            "AND (:tipo IS NULL OR t.tipo = :tipo) " +
+            "AND t.data >= :dataInicio AND t.data <= :dataFim " +
             "AND (:categoriaId IS NULL OR t.categoria.id = :categoriaId)")
-    Page<Transacao> filtrar(
+    Page<Transacao> filtrarPorPeriodo(
             @Param("usuario") Usuario usuario,
             @Param("dataInicio") LocalDate dataInicio,
             @Param("dataFim") LocalDate dataFim,
-            @Param("tipo") TipoTransacao tipo,
             @Param("categoriaId") Long categoriaId,
             Pageable pageable);
 }
