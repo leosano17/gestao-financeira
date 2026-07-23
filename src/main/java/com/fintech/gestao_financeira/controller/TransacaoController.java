@@ -1,6 +1,7 @@
 package com.fintech.gestao_financeira.controller;
 
 import com.fintech.gestao_financeira.model.Transacao;
+import com.fintech.gestao_financeira.model.TipoTransacao;
 import com.fintech.gestao_financeira.service.TransacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.fintech.gestao_financeira.model.TipoTransacao;
-import java.time.LocalDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/transacoes")
@@ -28,15 +28,18 @@ public class TransacaoController {
             Authentication auth,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
-
         Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by("data").descending());
         return transacaoService.listarPorUsuario(auth.getName(), pageable);
     }
 
     @PostMapping
-    public ResponseEntity<Transacao> salvar(@Valid @RequestBody Transacao transacao,
-                                            Authentication auth) {
+    public ResponseEntity<Transacao> salvar(@Valid @RequestBody Transacao transacao, Authentication auth) {
         return ResponseEntity.ok(transacaoService.salvar(transacao, auth.getName()));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Transacao> editar(@PathVariable Long id, @Valid @RequestBody Transacao transacao, Authentication auth) {
+        return ResponseEntity.ok(transacaoService.editar(id, transacao, auth.getName()));
     }
 
     @DeleteMapping("/{id}")
@@ -49,6 +52,7 @@ public class TransacaoController {
     public ResponseEntity<BigDecimal> consultarSaldo(Authentication auth) {
         return ResponseEntity.ok(transacaoService.calcularSaldo(auth.getName()));
     }
+
     @GetMapping("/filtrar")
     public Page<Transacao> filtrar(
             Authentication auth,
@@ -58,7 +62,6 @@ public class TransacaoController {
             @RequestParam(required = false) Long categoriaId,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "10") int tamanho) {
-
         Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by("data").descending());
         return transacaoService.filtrar(auth.getName(), dataInicio, dataFim, tipo, categoriaId, pageable);
     }

@@ -36,6 +36,24 @@ public class TransacaoService {
         return transacaoRepository.save(transacao);
     }
 
+    public Transacao editar(Long id, Transacao dados, String email) {
+        Transacao transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transação não encontrada"));
+
+        if (transacao.getUsuario() == null ||
+                !transacao.getUsuario().getEmail().equals(email)) {
+            throw new UnauthorizedException("Você não tem permissão para editar essa transação");
+        }
+
+        transacao.setDescricao(dados.getDescricao());
+        transacao.setValor(dados.getValor());
+        transacao.setData(dados.getData());
+        transacao.setTipo(dados.getTipo());
+        transacao.setCategoria(dados.getCategoria());
+
+        return transacaoRepository.save(transacao);
+    }
+
     public void deletar(Long id, String email) {
         Transacao transacao = transacaoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transação não encontrada"));
