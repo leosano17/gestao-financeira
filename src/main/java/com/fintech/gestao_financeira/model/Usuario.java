@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -26,7 +27,10 @@ public class Usuario {
 
     @Column(nullable = false)
     @NotBlank(message = "Senha é obrigatória")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])(?=.*[a-z]).{8,}$",
+            message = "Senha deve ter no mínimo 8 caracteres, uma letra maiúscula, uma minúscula e um caractere especial"
+    )
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
-    ;
 }
