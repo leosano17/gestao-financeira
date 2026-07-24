@@ -52,7 +52,6 @@ public class PagamentoDespesaFixaService {
 
         pagamentoRepository.save(pagamento);
 
-        // Cria transação automática
         Transacao transacao = new Transacao();
         transacao.setDescricao("(Fixo) " + despesa.getDescricao());
         transacao.setValor(despesa.getValor());

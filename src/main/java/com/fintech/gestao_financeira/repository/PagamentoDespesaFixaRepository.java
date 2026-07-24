@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface PagamentoDespesaFixaRepository extends JpaRepository<PagamentoDespesaFixa, Long> {
-    List<PagamentoDespesaFixa> findByDespesaFixaMesAndAno(DespesaFixa despesaFixa, Integer mes, Integer ano);
     Optional<PagamentoDespesaFixa> findByDespesaFixaAndMesAndAno(DespesaFixa despesaFixa, Integer mes, Integer ano);
     List<PagamentoDespesaFixa> findByDespesaFixaInAndMesAndAno(List<DespesaFixa> despesas, Integer mes, Integer ano);
 }
